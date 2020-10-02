@@ -34,8 +34,8 @@ def contact(request, methods = ['GET', 'POST']):
         email = request.POST.get('email')
         contact = Contact(fname=fname, lname=lname, subject=subject, message=message, email=email)
         contact.save()
-        sender_add = 'developerlife69@gmail.com'
-        password = 'somkumud'
+        sender_add = 'yourEmail'
+        password = 'yourPassword'
         reciever_add = email
         server = smtplib.SMTP('smtp.gmail.com:587')
         subb = f'{fname} you Order Has been Placed'
