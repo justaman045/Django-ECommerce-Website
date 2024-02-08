@@ -3,6 +3,7 @@ from .models import Product, Order, Contact, admin
 import requests
 from itertools import chain
 import smtplib
+from django.http import JsonResponse
 
 # Create your views here.
 def home(request):
@@ -116,8 +117,9 @@ def view(request, Product_Name, ID_of_the_Product):
     allProds = []
     idprod = int(ID_of_the_Product)
     catProds = Product.objects.filter(id=idprod)
+    catProd = Product.objects.get(id=idprod)
     allProds = Product.objects.values()
-    params = {'allprods': allProds, 'catprods': catProds}
+    params = {'allprods': allProds, 'catprods': catProds, 'catprod': catProd}
     return render(request, 'shop-single.html', params)
 
 def web(request):
@@ -166,3 +168,44 @@ def search(request, keyword):
 
 def sub(request, email):
     response = requests.post('https://coderaman07.ck.page/', data = {'name' : email})
+
+def chatbot_view(request, ID_of_the_Product: int):
+    if request.method == 'POST':
+        message = request.POST.get('message', '').lower()
+        product_id = ID_of_the_Product
+        response = generate_response(message, product_id)
+        return JsonResponse({'response': response})
+    else:
+        return render(request, 'chatbot/chatbot.html')
+
+def generate_response(message: str, id: int):
+    # Your chatbot logic goes here
+    # For now, let's return a dummy response
+    if str(message).lower() == 'hello' or message.lower() == 'hi':
+        return 'Hi there! How can I help you today?'
+    elif message.lower() == 'product name' or message.lower() == 'name' or 'what is the product name' in message.lower():
+        try:
+            catprods = Product.objects.get(id = id)
+            return f'The Product name is : {catprods.Product_Name} and it comes under {catprods.Cateogary} cateogary'
+        except Product.DoesNotExist:
+            return "There might have been a network issue. Please reload the page"
+    elif message.lower() == 'product price' or message.lower() == 'price' or 'what is the product price' in message.lower():
+        try:
+            catprods = Product.objects.get(id = id)
+            return f'The Product name is : {catprods.Price} and it comes under {catprods.Cateogary} cateogary'
+        except Product.DoesNotExist:
+            return "There might have been a network issue. Please reload the page"
+    elif message.lower() == 'product description' or message.lower() == 'description' or 'what is the product description' in message.lower():
+        try:
+            catprods = Product.objects.get(id = id)
+            return f'The Product name is : {catprods.Description} and it comes under {catprods.Cateogary} cateogary'
+        except Product.DoesNotExist:
+            return "There might have been a network issue. Please reload the page"
+    elif message.lower() == 'product published date' or message.lower() == 'published date' or 'what is the product published date' in message.lower():
+        try:
+            catprods = Product.objects.get(id = id)
+            return f'The Product name is : {catprods.pub_date} and it comes under {catprods.Cateogary} cateogary'
+        except Product.DoesNotExist:
+            return "There might have been a network issue. Please reload the page"
+    else:
+        return 'I\'m sorry, I don\'t understand.'

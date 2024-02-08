@@ -18,4 +18,5 @@ urlpatterns = [
     path('search/<keyword>', views.search, name='search'),
     path('subscribe/<email>', views.sub, name='subscribe'),
     path('view/<Product_Name>/<ID_of_the_Product>', views.view, name='view'),
+    path('chatbot/<int:ID_of_the_Product>/', views.chatbot_view, name='chatbot'),
 ]
